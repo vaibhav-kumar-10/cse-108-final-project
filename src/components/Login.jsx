@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 function Login() {
-    const [username, setUsername] = useState("");
+    const [id, setID] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
 
@@ -17,7 +17,7 @@ function Login() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ id, password }),
             });
 
             if (!response.ok) {
@@ -27,7 +27,7 @@ function Login() {
             const data = await response.json();
 
             // Handle successful login
-            alert(`Welcome, ${data.username}!`);
+            alert(`Welcome, ${data.id}!`);
             setError(null);
             // Redirect or save authentication token, e.g.:
             // localStorage.setItem("token", data.token);
@@ -47,8 +47,8 @@ function Login() {
                     <input
                         type="text"
                         id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={id}
+                        onChange={(e) => setID(e.target.value)}
                         required
                         style={{ width: "100%", padding: "8px" }}
                     />
