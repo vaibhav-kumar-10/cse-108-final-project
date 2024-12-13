@@ -22,5 +22,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Python pycache
-backend/pycache__/
+# Python
+backend/__pycache__/
+
+# Database
+backend/instance/trades.db
