@@ -4,6 +4,7 @@ import Transactions from './components/Transactions.jsx'
 import Portfolio from './components/Portfolio.jsx'
 import Login from './components/Login.jsx'
 import Register from './components/Register.jsx'
+import Logout from './components/Logout.jsx'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/logout" element={<Logout />} />
         </Routes>
       </Router>
     </div>

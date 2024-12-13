@@ -1,5 +1,5 @@
 from flask import Flask, request, redirect, url_for, jsonify
-from flask_login import LoginManager, current_user, login_user
+from flask_login import LoginManager, current_user, login_user, logout_user
 from database import User, create_app, db
 from sqlalchemy import or_
 
@@ -9,9 +9,6 @@ app = create_app()
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
-# app.secret_key = 'keep it secret, keep it safe' # Add this to avoid an 
-# app.config['SECRET_KEY'] = 'secret-key-goes-here'
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -37,15 +34,12 @@ def login():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
-
     # Validate required fields
     if not all(key in data for key in ['username', 'email', 'password']):
         return jsonify({"error": "Missing username, email, or password"}), 400
-
     username = data['username']
     email = data['email']
     password = data['password']
-
     # Ensure username and email are unique
     existing_user = User.query.filter(
         or_(
@@ -53,21 +47,29 @@ def register():
             User.email == email
         )
     ).first()
-
     if existing_user:
         return jsonify({"error": "Username or email already exists"}), 409
-
-    # try:
-        # Create a new user
+    # Create user for db
     new_user = User(username=username, email=email)
     new_user.set_password(password)  # Hash the password
     db.session.add(new_user)
     db.session.commit()
-
     return jsonify({"message": "Registration successful"}), 201
-    # except IntegrityError:
-    #     db.session.rollback()
-    #     return jsonify({"error": "Database error. Please try again later."}), 500
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    # Ensure the user is authenticated before logging out
+    if current_user.is_authenticated:
+        logout_user()  # Logs the user out and clears their session
+        return jsonify({"message": "Logout successful"}), 200
+    else:
+        return jsonify({"error": "No user is logged in"}), 400
+
+@app.route('/auth/status', methods=['GET'])
+def auth_status():
+    if current_user.is_authenticated:
+        return jsonify({"logged_in": True, "username": current_user.username}), 200
+    return jsonify({"logged_in": False}), 200
 
 # Create database tables
 with app.app_context():

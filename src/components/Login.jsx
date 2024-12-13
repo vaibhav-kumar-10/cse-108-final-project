@@ -18,6 +18,7 @@ function Login() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ id, password }),
+                // credentials: 'include',
             });
 
             if (!response.ok) {
@@ -30,7 +31,7 @@ function Login() {
             alert(`Welcome, ${data.id}!`);
             setError(null);
             // Redirect or save authentication token, e.g.:
-            // localStorage.setItem("token", data.token);
+            localStorage.setItem('loggedIn', 'true');
         } catch (err) {
             // Handle errors
             setError(err.message);
