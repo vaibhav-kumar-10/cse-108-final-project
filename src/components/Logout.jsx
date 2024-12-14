@@ -12,7 +12,7 @@ function Logout() {
             try {
                 const response = await fetch('http://127.0.0.1:7000/logout', {
                     method: 'POST',
-                    // credentials: 'same-origin',
+                    credentials: 'include',
                 });
                 if (response.ok) {
                     console.log('Successfully logged out');

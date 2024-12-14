@@ -7,7 +7,22 @@ import Register from './components/Register.jsx'
 import Logout from './components/Logout.jsx'
 
 function App() {
+
+  useEffect(() => {
+    async function checkAuthStatus() {
+      const response = await fetch('/auth/status', { credentials: 'include' });
+      if (response.ok) {
+        const data = await response.json();
+        setAuthState({ isLoggedIn: true, user: data.user });
+      } else {
+        setAuthState({ isLoggedIn: false });
+      }
+    }
+    checkAuthStatus();
+  }, []);  
+
   return (
+
     <div className="App">
       <Router>
         <Routes>

@@ -58,7 +58,7 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         if (isLoggedIn && authUser) {
-            // localStorage.setItem('authUser', JSON.stringify(authUser));
+            localStorage.setItem('authUser', JSON.stringify(authUser));
         } else {
             // localStorage.removeItem('authUser');
         }

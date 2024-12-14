@@ -27,19 +27,18 @@ function Login() {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({ id, password }),
-                // credentials: 'include',
             });
 
             if (!response.ok) {
                 throw new Error("Invalid username or password.");
             }
 
-            // Handle successful login
+            // Redirect and save authentication token, e.g.:
             navigate('/');
             setError(null);
-            // Redirect or save authentication token, e.g.:
-            // login(id);
+            login(id);
         } catch (err) {
             // Handle errors
             setError(err.message);

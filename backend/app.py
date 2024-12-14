@@ -1,12 +1,17 @@
-from flask import Flask, request, redirect, url_for, jsonify
-from flask_login import LoginManager, current_user, login_user, logout_user
+from flask import Flask, request, redirect, url_for, jsonify, session
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from database import User, create_app, db
 from sqlalchemy import or_
+from datetime import timedelta
 
 app = create_app()
 
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # Set to 7 days, for example
+app.config['SESSION_COOKIE_NAME'] = 'my_session'
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+app.config['SESSION_COOKIE_PATH'] = '/'  # Default path
+app.config['SESSION_COOKIE_DOMAIN'] = '127.0.0.1'
 
 # Flask login
 login_manager = LoginManager()
@@ -32,6 +37,7 @@ def login():
         print('Couldnt log in user!')
         return jsonify({"error": "Invalid username or password"}), 401
     login_user(user)
+    session.permanent = True  # Make the session cookie persistent
     return jsonify({"message": "Login successful"}), 200
 
 @app.route('/register', methods=['POST'])
@@ -69,10 +75,13 @@ def logout():
         return jsonify({"error": "No user is logged in"}), 400
 
 @app.route('/auth/status', methods=['GET'])
+@login_required
 def auth_status():
-    if current_user.is_authenticated:
-        return jsonify({"logged_in": True, "username": current_user.username}), 200
-    return jsonify({"logged_in": False}), 200
+    return jsonify({"logged_in": True, "user": current_user.username}), 200
+
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+    return jsonify({"error": "User not authenticated"}), 401
 
 # Create database tables
 with app.app_context():
