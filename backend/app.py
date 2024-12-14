@@ -5,6 +5,9 @@ from sqlalchemy import or_
 
 app = create_app()
 
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+
 # Flask login
 login_manager = LoginManager()
 login_manager.init_app(app)

@@ -7,9 +7,9 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, supports_credentials=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trades.db'
-    app.config['SECRET_KEY'] = 'secret-key-goes-here'
+    app.config['SECRET_KEY'] = 'your-secret-key'
     db.init_app(app)
     return app
 

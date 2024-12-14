@@ -1,11 +1,21 @@
 import React, { useState } from "react";
+import { useAuth } from '../contexts/AuthContext.js';
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+
+    const { isLoggedIn, login } = useAuth(); 
+
     const [id, setID] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
 
+    const navigate = useNavigate(); // Initialize useNavigate hook
+
     const handleLogin = async (e) => {
+        if (isLoggedIn)
+            return;
+
         e.preventDefault(); // Prevent page refresh
 
         // Define the backend endpoint
@@ -25,13 +35,11 @@ function Login() {
                 throw new Error("Invalid username or password.");
             }
 
-            const data = await response.json();
-
             // Handle successful login
-            alert(`Welcome, ${data.id}!`);
+            navigate('/');
             setError(null);
             // Redirect or save authentication token, e.g.:
-            localStorage.setItem('loggedIn', 'true');
+            // login(id);
         } catch (err) {
             // Handle errors
             setError(err.message);

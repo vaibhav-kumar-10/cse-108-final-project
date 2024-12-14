@@ -12,8 +12,6 @@ function HeaderLoggedIn() {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-auto">
                         {/* Right Side Buttons */}
-                        <Nav.Link href="/transactions">Transactions</Nav.Link>
-                        <Nav.Link href="/portfolio">Portfolio</Nav.Link>
                         <Button variant="outline-light" href="/login" className="me-2">
                             Login
                         </Button>
