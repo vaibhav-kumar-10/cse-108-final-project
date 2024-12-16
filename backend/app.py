@@ -85,6 +85,7 @@
     
 
 from flask import Flask
+from flask_cors import CORS
 
 from extensions import db, migrate, jwt
 from auth.views import auth_blueprint
@@ -96,10 +97,17 @@ app.config.from_object("config")
 db.init_app(app)
 migrate.init_app(app, db)
 jwt.init_app(app)
+CORS(app, supports_credentials=True)
+# cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
 # Create database tables
 with app.app_context():
     db.create_all()
+    
+# @app.after_request
+# def log_cookies(response):
+#     print(response.headers.get('Set-Cookie'))
+#     return response
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=7000)

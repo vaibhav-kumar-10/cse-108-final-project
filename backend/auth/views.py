@@ -2,7 +2,8 @@ from flask import current_app as app
 from flask import Blueprint, request, jsonify
 from flask_restful import Resource
 from marshmallow import ValidationError
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, jwt_required, get_jwt_identity, get_jwt
+from datetime import timedelta
 
 from api.schemas.user import UserCreateSchema, UserSchema
 from extensions import db, pwd_context, jwt
@@ -26,26 +27,47 @@ def register():
     
     return {"msg": "Created user", "user": schema.dump(user)}
 
+# session_lifetime = current_app.config['PERMANENT_SESSION_LIFETIME']   # Dynamically get from Flask app config
+def set_jwt_cookie(response, token, cookie_name='access_token_cookie', max_age=None):
+    response.set_cookie(
+        cookie_name,
+        token,
+        max_age,
+        secure=True,  # Use True for HTTPS
+        httponly=True,  # Prevent JavaScript access
+        samesite='None',  # Set to 'None' for cross-site requests
+        path='/'
+    )
+    return response
+
 @auth_blueprint.route("/login", methods=["POST"])
 def login():
     if not request.is_json:
-        return jsonify({"msg": "Missing JSON in request"}), 400
+        return jsonify({"msg": "Missing JSON in request"}), 410
 
     email = request.json.get("email")
     password = request.json.get("password")
     if not email or not password:
-        return jsonify({"msg": "Missing email or password"}), 400
+        return jsonify({"msg": "Missing email or password"}), 420
 
     user = User.query.filter_by(email=email).first()
     if user is None or not pwd_context.verify(password, user.password):
-        return jsonify({"msg": "Bad credentials"}), 400
-
+        return jsonify({"msg": "Bad credentials"}), 430
+    # Generate tokens and add to database
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
     add_token_to_database(access_token)
     add_token_to_database(refresh_token)
-
-    return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
+    # Add tokens to http header
+    response = jsonify({
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "name": user.name
+    })
+    # Adds cookies to response, current implementation will leave them unused
+    set_jwt_cookie(response, access_token, cookie_name='access_token')
+    set_jwt_cookie(response, refresh_token, cookie_name='refresh_token', max_age=timedelta(days=7))
+    return response, 200
 
 @auth_blueprint.route("/logout", methods=["POST"])
 @jwt_required()

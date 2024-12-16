@@ -3,7 +3,7 @@ import './Register.css'
 
 function Register() {
     const [formData, setFormData] = useState({
-        username: '',
+        name: '',
         email: '',
         password: '',
     });
@@ -27,7 +27,7 @@ function Register() {
         setSuccess(''); // Clear previous success messages
 
         try {
-            const response = await fetch('http://127.0.0.1:7000/register', {
+            const response = await fetch('http://127.0.0.1:7000/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,10 +38,10 @@ function Register() {
             if (response.ok) {
                 const data = await response.json();
                 setSuccess('Registration successful! You can now log in.');
-                setFormData({ username: '', email: '', password: '' }); // Clear form
+                setFormData({ name: '', email: '', password: '' }); // Clear form
             } else {
                 const errorData = await response.json();
-                setError(errorData.message || 'Registration failed.');
+                setError(errorData.msg || errorData.name || errorData.email || errorData.password || 'Registration failed. Username or email may already exist!');
             }
         } catch (err) {
             setError('An error occurred. Please try again.');
@@ -55,12 +55,12 @@ function Register() {
             {success && <p className="success">{success}</p>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="username">Username</label>
+                    <label htmlFor="name">Username</label>
                     <input
                         type="text"
-                        id="username"
-                        name="username"
-                        value={formData.username}
+                        id="name"
+                        name="name"
+                        value={formData.name}
                         onChange={handleChange}
                         required
                     />

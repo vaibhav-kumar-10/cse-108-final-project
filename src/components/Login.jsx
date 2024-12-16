@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
 
-    const { isLoggedIn, login } = useAuth(); 
+    const { isLoggedIn, login } = useAuth();
 
     const [id, setID] = useState("");
     const [password, setPassword] = useState("");
@@ -19,7 +19,7 @@ function Login() {
         e.preventDefault(); // Prevent page refresh
 
         // Define the backend endpoint
-        const url = "http://127.0.0.1:7000/login";
+        const url = "http://127.0.0.1:7000/auth/login";
 
         try {
             const response = await fetch(url, {
@@ -27,18 +27,29 @@ function Login() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                credentials: "include",
-                body: JSON.stringify({ id, password }),
+                body: JSON.stringify({ email: id, password }),
             });
 
             if (!response.ok) {
                 throw new Error("Invalid username or password.");
             }
 
-            // Redirect and save authentication token, e.g.:
+            const data = await response.json();
+
+            // Check if the refresh token is present in the response
+            if (data.refresh_token && data.access_token && data.name) {
+                // Store the refresh token securely (e.g., HTTP-only cookie or localStorage)
+                localStorage.setItem("refresh_token", data.refresh_token);
+                localStorage.setItem("access_token", data.access_token);
+                // save authentication token
+                const user_id = data.name;
+                localStorage.setItem("user_id", user_id);
+                login(user_id);
+            }
+
             navigate('/');
             setError(null);
-            login(id);
+
         } catch (err) {
             // Handle errors
             setError(err.message);
@@ -51,7 +62,7 @@ function Login() {
             {error && <p style={{ color: "red" }}>{error}</p>}
             <form onSubmit={handleLogin}>
                 <div style={{ marginBottom: "10px" }}>
-                    <label htmlFor="username">Username</label>
+                    <label htmlFor="username">Email</label>
                     <input
                         type="text"
                         id="username"

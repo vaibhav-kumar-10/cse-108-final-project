@@ -1,9 +1,11 @@
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import { useAuth } from '../contexts/AuthContext.js'
+import { useLogout } from '../components/Logout.jsx'
 
 function HeaderLoggedIn() {
 
-    const { authUser } = useAuth(); 
+    const { authUser } = useAuth();
+    const handleLogout = useLogout();
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg">
@@ -17,14 +19,16 @@ function HeaderLoggedIn() {
                     <Nav className="ms-auto">
                         {/* Welcome Message */}
                         <Nav.Link>
-                            Welcome, {authUser?.name || "Guest"}!
+                            Welcome, {authUser || "Guest"}!
                         </Nav.Link>
                         {/* Right Side Buttons */}
                         <Nav.Link href="/transactions">Transactions</Nav.Link>
                         <Nav.Link href="/portfolio">Portfolio</Nav.Link>
-                        <Button variant="light" href="/logout">
-                            Logout
-                        </Button>
+                        <Nav.Item>
+                            <Button variant="light" className="basic" onClick={handleLogout}>
+                                Logout
+                            </Button>
+                        </Nav.Item>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

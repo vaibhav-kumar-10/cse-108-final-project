@@ -1,36 +1,30 @@
-import { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.js';
 
-function Logout() {
+export function useLogout() {
+    const { logout } = useAuth();
 
-    const { isLoggedIn, logout } = useAuth();
+    const handleLogout = async () => {
+        const access_token = localStorage.getItem("access_token");
+        console.log(access_token);
+        try {
+            const response = await fetch('http://127.0.0.1:7000/auth/logout', {
+                method: 'POST',
+                headers: {
+                    "Authorization": `Bearer ${access_token}`,  // Add the Bearer token to the Authorization header
+                    "Content-Type": "application/json",
+                },
+            });
 
-    useEffect(() => {
-        async function handleLogout() {
-            // if (!isLoggedIn)
-            //     return;
-            try {
-                const response = await fetch('http://127.0.0.1:7000/logout', {
-                    method: 'POST',
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    console.log('Successfully logged out');
-                    // logout();
-                } else {
-                    console.error('Logout failed');
-                }
-            } catch (error) {
-                console.error('An error occurred during logout:', error);
+            if (response.ok) {
+                logout();
+                localStorage.removeItem("refresh_token");
+            } else {
+                console.error('Logout failed');
             }
+        } catch (error) {
+            console.error('An error occurred during logout:', error);
         }
+    };
 
-        handleLogout();
-    });
-
-    return (
-        <p>You have been logged out!</p>
-    );
+    return handleLogout; // Export the logout function
 }
-
-export default Logout
