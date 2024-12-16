@@ -1,5 +1,6 @@
 import requests
 import yfinance as yf
+import json
 
 # print(get_all_tickers('lu139SXD8pwQNDYjEtqt1NYLHIfxAZpG'))
 
@@ -12,7 +13,6 @@ def search_tickers_polygon(query, api_key, limit=10):
         "apiKey": api_key,
     }
     if query != "*":
-        print('reached')
         params["sort"] = "ticker",
         params["oprder"] = "asc",
         params["search"] = query
@@ -96,14 +96,27 @@ tickers_with_names = search_tickers_polygon(search_query, POLYGON_API_KEY, limit
 # Step 2: Fetch stock data for the tickers
 if tickers_with_names:
     stock_data = fetch_stock_data(tickers_with_names)
+    # print(json.dumps(tickers_with_names))
+    marketInfo = [] # Store data in here to jsonify
     for info in stock_data:
-        if "Error" in info.values():
+        if "Error" in info.values(): # Skip over stocks with errors
             print(f"{info['ticker']} ({info['name']}): Error fetching data")
         else:
-            print(
-                f"{info['ticker']} ({info['name']}): Current Price = {info['current_price']:.2f}, "
-                f"Previous Price = {info['previous_price']:.2f}, "
-                f"Change = {info['percentage_change']:.2f}% ({info['trend']} trend)"
-            )
+            # Jsonify instead of printing
+            # print(
+            #     f"{info['ticker']} ({info['name']}): Current Price = {info['current_price']:.2f}, "
+            #     f"Previous Price = {info['previous_price']:.2f}, "
+            #     f"Change = {info['percentage_change']:.2f}% ({info['trend']} trend)"
+            # )
+            stockInfo = {}
+            stockInfo['ticker'] = info['ticker']
+            stockInfo['name'] = info['name']
+            stockInfo['price'] = info['current_price']
+            stockInfo['percentage'] = info['percentage_change']
+            marketInfo.append(stockInfo)
+            
+    marketJson = json.dumps(marketInfo)
+    print(marketJson)
+    
 else:
     print("No valid tickers found.")
