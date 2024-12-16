@@ -1,70 +1,57 @@
-# Getting Started with Create React App
+# Paper Stock Trading Project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is for the CSE108 final. It uses ReactJS, Flask, and SQLAlchemy.
 
-## Available Scripts
+## Clone the repo
 
-In the project directory, you can run:
+First clone the project to use it. Make sure git is installed.
+```bash
+git clone https://github.com/Remag502/CSE108-FinalProject.git
+```
 
-### `npm start`
+## Frontend Installation
+Make sure you have node package manager installed and run
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm install
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+This will make sure all dependencies within the package.json are installed and up to date.
 
-### `npm test`
+```bash
+npm start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Then you can start the server. This should run on localhost:3000
 
-### `npm run build`
+## Backend Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Setup a virtual enviornment in Python to run the backend flask server.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+python3 -m venv <myenvpath>
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Navigate the backend folder and install the dependencies.
 
-### `npm run eject`
+```bash
+pip install -r requirements.txt
+```
+And then start the server. This should run on localhost:7000
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+python3 app.py
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Current features
+- Frotend, backend, and databases boiler code are setup
+- Login, Register, Logout, Refresh tokens and authentication security works
+- Mock pages are there but need to be updated including: home, transactions, portfolio
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Unimplemented Features
+- Backend route to get all stock information. First we need to find a library that gets stock information but there should be plenty.
+- Database to store user money and transactions. This also means updating the user DB class. We will skip DB migrations for simplicity.
+- Chart.js to view stock data. We need some way to parse data of some stock over a few years, and a page the view it. Chart.js is a recommended library.
+- Add transaction history route to backend. Allow frontend to view history of transactions. Update home page
+- Feature to obtain paper money, purchase and sell stocks. We can avoid adding call options for now. We will also avoid using websocket and rely on REST due to time.
+- Host application on a public server.
