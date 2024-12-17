@@ -22,8 +22,8 @@ function HeaderLoggedIn() {
                             Welcome, {authUser || "Guest"}!
                         </Nav.Link>
                         {/* Right Side Buttons */}
-                        <Nav.Link href="/transactions">Transactions</Nav.Link>
                         <Nav.Link href="/portfolio">Portfolio</Nav.Link>
+                        <Nav.Link href="/trade">Trade</Nav.Link>
                         <Nav.Item>
                             <Button variant="light" className="basic" onClick={handleLogout}>
                                 Logout
