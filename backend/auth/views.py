@@ -43,16 +43,16 @@ def set_jwt_cookie(response, token, cookie_name='access_token_cookie', max_age=N
 @auth_blueprint.route("/login", methods=["POST"])
 def login():
     if not request.is_json:
-        return jsonify({"msg": "Missing JSON in request"}), 410
+        return jsonify({"msg": "Missing JSON in request"}), 400
 
     email = request.json.get("email")
     password = request.json.get("password")
     if not email or not password:
-        return jsonify({"msg": "Missing email or password"}), 420
+        return jsonify({"msg": "Missing email or password"}), 400
 
     user = User.query.filter_by(email=email).first()
     if user is None or not pwd_context.verify(password, user.password):
-        return jsonify({"msg": "Bad credentials"}), 430
+        return jsonify({"msg": "Bad credentials"}), 400
     # Generate tokens and add to database
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
