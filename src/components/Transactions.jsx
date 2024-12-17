@@ -16,8 +16,8 @@ function Transactions() {
                 if (!token) {
                     throw new Error("No access token found");
                 }
-
-                const response = await fetch('http://127.0.0.1:7000/auth/transactions', {
+                const backendUrl = process.env.REACT_APP_BACKEND_URL;
+                const response = await fetch(`${backendUrl}/auth/transactions`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${token}`,

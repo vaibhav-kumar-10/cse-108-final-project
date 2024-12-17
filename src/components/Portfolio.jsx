@@ -14,7 +14,8 @@ function Portfolio() {
     }, []);
 
     const fetchPortfolio = async () => {
-        const url = "http://127.0.0.1:7000/auth/portfolio";
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const url = `${backendUrl}/auth/portfolio`;
         setLoading(true);
         try {
             const authToken = localStorage.getItem("access_token");
@@ -59,7 +60,8 @@ function Portfolio() {
             return;
         }
 
-        const url = "http://127.0.0.1:7000/auth/sell";
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const url = `${backendUrl}/auth/sell`;
         try {
             const authToken = localStorage.getItem("access_token");
             const response = await fetch(url, {

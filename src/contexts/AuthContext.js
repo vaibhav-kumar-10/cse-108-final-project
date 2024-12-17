@@ -1,43 +1,3 @@
-// import React, { createContext, useState, useContext } from 'react';
-
-// const AuthContext = createContext();
-
-// export function useAuth() {
-//     return useContext(AuthContext);
-// }
-
-// export function AuthProvider( {children} ) {
-//     const [authUser, setAuthUser] = useState(null);
-//     const [loggedIn, setLoggedIn] = useState(false);
-
-//     const login = (id) => {
-//         setLoggedIn(true)
-//         setAuthUser({
-//             name: id
-//         })
-//     }
-
-//     const logout = () => {
-//         setLoggedIn(false)
-//         setAuthUser(false)
-//     }
-
-//     const value = {
-//         authUser,
-//         loggedIn,
-//         login,
-//         logout
-//     }
-
-//     return (
-//         <AuthContext.Provider value={value}>
-//             {children}
-//         </AuthContext.Provider>
-//     );
-
-// }
-
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext();
@@ -74,6 +34,7 @@ export function AuthProvider({ children }) {
                     localStorage.setItem("access_token", data.access_token);
             } else {
                 console.error("Failed to refresh token:", response.statusText);
+                localStorage.removeItem("refresh_token"); // refresh token is also expired
                 logout();
             }
         } catch (error) {
@@ -91,12 +52,9 @@ export function AuthProvider({ children }) {
         return !!localStorage.getItem('authUser');
     });
 
-
-
     useEffect(() => {
         // Create smoother UI by assuming user is logged in, if auth cookie exists
         const user_id = localStorage.getItem('user_id');
-        console.log(user_id);
         if (user_id != null)
             login(user_id);
         // Check if the session cookie exists

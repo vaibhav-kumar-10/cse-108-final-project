@@ -17,7 +17,8 @@ function Portfolio() {
         if (!searchQuery.trim()) return; // Prevent empty queries
         
         setLoading(true);
-        const url = `http://127.0.0.1:7000/stocks/market/${searchQuery}`;
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const url = `${backendUrl}/stocks/market/${searchQuery}`;
 
         try {
             const authToken = localStorage.getItem('access_token');

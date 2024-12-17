@@ -19,7 +19,8 @@ function Login() {
         e.preventDefault(); // Prevent page refresh
 
         // Define the backend endpoint
-        const url = "http://127.0.0.1:7000/auth/login";
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const url = `${backendUrl}/auth/login`;
 
         try {
             const response = await fetch(url, {

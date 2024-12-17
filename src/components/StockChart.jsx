@@ -8,8 +8,7 @@ const StockChart = ({ symbol }) => {
   const [stockData, setStockData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // const API_KEY = process.env.REACT_APP_POLYGON_API_KEY;
-  const API_KEY = 'lu139SXD8pwQNDYjEtqt1NYLHIfxAZpG';
+  const API_KEY = process.env.REACT_APP_POLYGON_API_KEY;
   const endDate = new Date().toISOString().split('T')[0];
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 10);

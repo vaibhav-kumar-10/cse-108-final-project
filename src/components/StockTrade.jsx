@@ -22,7 +22,8 @@ function StockTrade() {
 
         try {
             const authToken = localStorage.getItem('access_token');
-            const response = await fetch('http://127.0.0.1:7000/auth/buy', {
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            const response = await fetch(`${backendUrl}/auth/buy`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
