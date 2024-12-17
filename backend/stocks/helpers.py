@@ -115,3 +115,30 @@ def get_stock_info(ticker, timespan="1day"):
     else:
         print(f"Error: {response.status_code}")
         return None
+
+def current_stock_price(ticker):
+    """
+    Fetches the current stock price and the time it was last closed for the given ticker.
+    """
+    url = f"https://api.polygon.io/v2/aggs/ticker/{ticker}/prev?apiKey={POLYGON_API_KEY}"
+    
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error if the request failed
+        
+        data = response.json()
+        if "results" in data and len(data["results"]) > 0:
+            result = data["results"][0]
+            current_price = result["c"]  # 'c' is the closing price
+            close_time = datetime.datetime.fromtimestamp(result["t"] / 1000)  # 't' is the timestamp in ms
+            
+            return {
+                "ticker": ticker,
+                "price": current_price,
+                "close_time": close_time.strftime("%Y-%m-%d %H:%M:%S")
+            }
+        else:
+            return {"error": "No stock data available"}
+    
+    except requests.exceptions.RequestException as e:
+        return {"error": str(e)}
