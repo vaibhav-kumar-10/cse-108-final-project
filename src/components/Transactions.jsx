@@ -6,7 +6,7 @@ function Transactions() {
     const { logout } = useAuth(); // Logout function from AuthContext
     const [transactions, setTransactions] = useState([]);
     const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(true); // Loading state
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {

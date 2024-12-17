@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 
 POLYGON_API_KEY = "lu139SXD8pwQNDYjEtqt1NYLHIfxAZpG"
 
+STOCK_PRICE_CACHE = {} #Cache to help load stocks faster
+
 def search_tickers_polygon(query, api_key, limit=10):
     url = "https://api.polygon.io/v3/reference/tickers"
     params = {
@@ -122,6 +124,11 @@ def current_stock_price(ticker):
     """
     url = f"https://api.polygon.io/v2/aggs/ticker/{ticker}/prev?apiKey={POLYGON_API_KEY}"
     
+    ticker = str(ticker)
+
+    if ticker in STOCK_PRICE_CACHE: 
+        return STOCK_PRICE_CACHE[ticker]
+
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raise an error if the request failed
@@ -130,15 +137,28 @@ def current_stock_price(ticker):
         if "results" in data and len(data["results"]) > 0:
             result = data["results"][0]
             current_price = result["c"]  # 'c' is the closing price
-            close_time = datetime.datetime.fromtimestamp(result["t"] / 1000)  # 't' is the timestamp in ms
+            close_time = result.get("t") # datetime.fromtimestamp(result["t"] / 1000)  # 't' is the timestamp in ms
             
-            return {
-                "ticker": ticker,
-                "price": current_price,
-                "close_time": close_time.strftime("%Y-%m-%d %H:%M:%S")
-            }
-        else:
-            return {"error": "No stock data available"}
-    
+            if current_price is not None and close_time is not None:
+                close_time = datetime.fromtimestamp(close_time / 1000)
+                price_data = {
+                    "ticker": ticker,
+                    "price": current_price,
+                    "close_time": close_time.strftime("%Y-%m-%d %H:%M:%S")
+                }
+                STOCK_PRICE_CACHE[ticker] = price_data
+                return price_data
+            else:
+                return {"error": "No stock data available"}
+            
     except requests.exceptions.RequestException as e:
         return {"error": str(e)}
+    
+def preload_stock_prices(tickers):
+    """
+    Preloads stock prices for a list of tickers into the global cache.
+    """
+    print("Preloading stock prices...")
+    for ticker in tickers:
+        current_stock_price(ticker)
+    print("Stock prices preloaded!")

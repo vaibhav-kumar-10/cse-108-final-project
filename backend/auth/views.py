@@ -10,6 +10,10 @@ from extensions import db, pwd_context, jwt
 from models.users import User
 from auth.helpers import add_token_to_database, revoke_token, is_token_revoked
 from models.transactions import Transaction
+from stocks.helpers import current_stock_price, fetch_stock_data, STOCK_PRICE_CACHE
+from stocks.helpers import preload_stock_prices
+
+
 
 auth_blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -59,6 +63,10 @@ def login():
     refresh_token = create_refresh_token(identity=user.id)
     add_token_to_database(access_token)
     add_token_to_database(refresh_token)
+
+    common_stock_tickers = ["AAPL", "MSFT", "GOOG", "AMZN", "TSLA"]
+    preload_stock_prices(common_stock_tickers)
+
     # Add tokens to http header
     response = jsonify({
         "access_token": access_token,
@@ -123,50 +131,6 @@ def check_if_token_revoked(jwt_headers, jwt_payload):
 def handle_marshmallow_error(e):
     return jsonify(e.messages), 400
 
-
-@auth_blueprint.route("/deposit", methods=["POST"])
-@jwt_required()
-def deposit():
-    user_id = get_jwt_identity()
-    data = request.get_json()
-    amount = data.get("amount")
-
-    if not amount or amount <= 0:
-        return jsonify({"msg": "Invalid ddeposit amount"}), 400
-    
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({"msg": "User not found"}), 404
-    
-    user.money += amount
-    transaction = Transaction(user_id=user_id, amount=amount, type="deposit")
-    db.session.add(transaction)
-    db.session.commit()
-    return jsonify({"msg": "Deposit successful", "balance": user.money}), 200
-
-@auth_blueprint.route("/withdraw", methods=["POST"])
-@jwt_required()
-def withdraw():
-    user_id = get_jwt_identity()
-    data = request.get_json()
-    amount = data.get("amount")
-
-    if not amount or amount <= 0:
-        return jsonify({"msg": "Invalid withdrawal amount"}), 400
-
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({"msg": "User not found"}), 404
-
-    if user.money < amount:
-        return jsonify({"msg": "Insufficient balance"}), 400
-
-    user.money -= amount
-    transaction = Transaction(user_id=user_id, amount=amount, type="withdrawal")
-    db.session.add(transaction)
-    db.session.commit()
-    return jsonify({"msg": "Withdrawal successful", "balance": user.money}), 200
-
 @auth_blueprint.route("/transactions", methods=["GET"])
 @jwt_required()
 def view_transactions():
@@ -174,7 +138,7 @@ def view_transactions():
     transactions = Transaction.query.filter_by(user_id=user_id).all()
 
     return jsonify([
-        {"id": t.id, "amount": t.amount, "type": t.type, "timestamp": t.timestamp}
+        {"id": t.user_transaction_id, "amount": t.amount, "type": t.type, "timestamp": t.timestamp}
         for t in transactions
     ]), 200
 
@@ -188,3 +152,151 @@ def balance():
         return jsonify({"msg": "User not found"}), 404
 
     return jsonify({"balance": user.money}), 200
+
+
+@auth_blueprint.route("/buy", methods=["POST"])
+@jwt_required()
+def buy_stock():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+
+    stock_ticker = data.get("stock_ticker")
+    quantity = data.get("quantity")
+
+    if not stock_ticker or not quantity or quantity <= 0:
+        return jsonify({"msg": "Invalid input"}), 400
+
+    stock_info = current_stock_price(stock_ticker)
+    if "error" in stock_info:
+        return jsonify({"msg": "Error fetching stock price"}), 400
+
+    stock_price = stock_info["price"]
+    total_cost = stock_price * quantity
+
+    user = User.query.get(user_id)
+    if user.money < total_cost:
+        return jsonify({"msg": "Insufficient balance"}), 400
+    
+    last_transaction = Transaction.query.filter_by(user_id=user_id).order_by(Transaction.user_transaction_id.desc()).first()
+    next_user_transaction_id = 1 if not last_transaction else last_transaction.user_transaction_id + 1
+
+
+    user.money -= total_cost
+    transaction = Transaction(
+        user_id=user_id,
+        user_transaction_id=next_user_transaction_id,
+        amount=-total_cost,
+        type=f"buy-{stock_ticker}"
+    )
+
+    db.session.add(transaction)
+    db.session.commit()
+
+    return jsonify({"msg": f"Bought {quantity} shares of {stock_ticker}", "balance": round(user.money, 2) }), 200
+
+
+
+@auth_blueprint.route("/sell", methods=["POST"])
+@jwt_required()
+def sell_stock():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+
+    stock_ticker = data.get("stock_ticker")
+    quantity = data.get("quantity")
+
+    if not stock_ticker or not quantity or quantity <= 0:
+        return jsonify({"msg": "Invalid input"}), 400
+
+    stock_info = current_stock_price(stock_ticker)
+    if "error" in stock_info:
+        return jsonify({"msg": "Error fetching stock price"}), 400
+
+    stock_price = stock_info["price"]
+    total_value = stock_price * quantity
+
+    user = User.query.get(user_id)
+
+    last_transaction = Transaction.query.filter_by(user_id=user_id).order_by(Transaction.user_transaction_id.desc()).first()
+    next_user_transaction_id = 1 if not last_transaction else last_transaction.user_transaction_id + 1
+
+    user.money += total_value
+    transaction = Transaction(
+        user_id=user_id,
+        user_transaction_id=next_user_transaction_id,
+        amount=total_value,
+        type=f"sell-{stock_ticker}"
+    )
+
+    db.session.add(transaction)
+    db.session.commit()
+
+    return jsonify({"msg": f"Sold {quantity} shares of {stock_ticker}", "balance": round(user.money, 2)}), 200
+
+@auth_blueprint.route("/portfolio", methods=["GET"])
+@jwt_required()
+def portfolio():
+    user_id = get_jwt_identity()
+    transactions = Transaction.query.filter_by(user_id=user_id).all()
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    holdings = {}
+    for t in transactions:
+        stock_ticker = t.type.split("-")[1]
+
+        # Fetch stock info since we need it to display
+        stock_info = STOCK_PRICE_CACHE.get(stock_ticker)
+        if not stock_info:
+            stock_info = current_stock_price(stock_ticker)
+            if stock_info and "price" in stock_info:
+                STOCK_PRICE_CACHE[stock_ticker] = stock_info
+        
+        if stock_info and "price" in stock_info:
+            price = stock_info["price"]
+            if t.type.startswith("buy-"):
+                holdings[stock_ticker] = holdings.get(stock_ticker, 0) + abs(t.amount / price)
+            elif t.type.startswith("sell-"):
+                holdings[stock_ticker] = holdings.get(stock_ticker, 0) - abs(t.amount / price)
+
+    #Gets rid of useless stocks
+    current_holdings = {ticker: qty for ticker, qty in holdings.items() if qty > 0}
+
+    tickers_with_names = [{"ticker": ticker, "name": ticker} for ticker in current_holdings.keys()]
+    stock_data = fetch_stock_data(tickers_with_names)
+
+    stock_summary = []
+    portfolio_value = 0
+
+    for stock in stock_data:
+        ticker = stock["ticker"]
+        name = stock["name"] 
+        current_price = stock["price"]
+        percentage_change = stock["percentage"]
+        quantity = round(current_holdings.get(ticker, 0), 2)
+
+        if quantity > 0:
+            total_value = round(current_price * quantity, 2)
+            portfolio_value += total_value
+
+            stock_summary.append({
+                "stock": ticker,
+                "name": name,
+                "quantity": quantity,
+                "current_price": round(current_price, 2),
+                "percentage_change": round(percentage_change, 2),
+                "total_value": total_value
+            })
+
+    balance = round(user.money, 2)
+    total_value_now = portfolio_value + balance
+    percentage_change_portfolio = ((total_value_now - 10000) / 10000) * 100
+
+    return jsonify({
+        "stocks": stock_summary,
+        "total_portfolio_value": round(portfolio_value, 2),
+        "balance": balance,
+        "percentage_change": 0.0 if portfolio_value == 0 else round(percentage_change_portfolio, 2)
+    }), 200
