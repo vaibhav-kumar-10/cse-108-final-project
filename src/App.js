@@ -5,6 +5,7 @@ import Trade from './components/Trade.jsx'
 import Login from './components/Login.jsx'
 import Register from './components/Register.jsx'
 import StockTrade from './components/StockTrade.jsx'
+import Transactions from "./components/Transactions.jsx"
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Main />} />
+          <Route path="/transactions" element={<Transactions />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/trade" element={<Trade />} />
           <Route path="/login" element={<Login />} />

@@ -47,6 +47,7 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
+    
     const handleRefresh = async () => {
         const url = "http://127.0.0.1:7000/auth/refresh";
 
@@ -90,6 +91,8 @@ export function AuthProvider({ children }) {
         return !!localStorage.getItem('authUser');
     });
 
+
+
     useEffect(() => {
         // Create smoother UI by assuming user is logged in, if auth cookie exists
         const user_id = localStorage.getItem('user_id');
@@ -110,6 +113,7 @@ export function AuthProvider({ children }) {
         setIsLoggedIn(false);
         localStorage.removeItem("access_token");
         localStorage.removeItem("user_id");
+        
     };
 
     const value = {

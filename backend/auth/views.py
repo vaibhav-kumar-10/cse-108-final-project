@@ -9,6 +9,7 @@ from api.schemas.user import UserCreateSchema, UserSchema
 from extensions import db, pwd_context, jwt
 from models.users import User
 from auth.helpers import add_token_to_database, revoke_token, is_token_revoked
+from models.transactions import Transaction
 
 auth_blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -121,3 +122,69 @@ def check_if_token_revoked(jwt_headers, jwt_payload):
 @auth_blueprint.errorhandler(ValidationError)
 def handle_marshmallow_error(e):
     return jsonify(e.messages), 400
+
+
+@auth_blueprint.route("/deposit", methods=["POST"])
+@jwt_required()
+def deposit():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+    amount = data.get("amount")
+
+    if not amount or amount <= 0:
+        return jsonify({"msg": "Invalid ddeposit amount"}), 400
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+    
+    user.money += amount
+    transaction = Transaction(user_id=user_id, amount=amount, type="deposit")
+    db.session.add(transaction)
+    db.session.commit()
+    return jsonify({"msg": "Deposit successful", "balance": user.money}), 200
+
+@auth_blueprint.route("/withdraw", methods=["POST"])
+@jwt_required()
+def withdraw():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+    amount = data.get("amount")
+
+    if not amount or amount <= 0:
+        return jsonify({"msg": "Invalid withdrawal amount"}), 400
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    if user.money < amount:
+        return jsonify({"msg": "Insufficient balance"}), 400
+
+    user.money -= amount
+    transaction = Transaction(user_id=user_id, amount=amount, type="withdrawal")
+    db.session.add(transaction)
+    db.session.commit()
+    return jsonify({"msg": "Withdrawal successful", "balance": user.money}), 200
+
+@auth_blueprint.route("/transactions", methods=["GET"])
+@jwt_required()
+def view_transactions():
+    user_id = get_jwt_identity()
+    transactions = Transaction.query.filter_by(user_id=user_id).all()
+
+    return jsonify([
+        {"id": t.id, "amount": t.amount, "type": t.type, "timestamp": t.timestamp}
+        for t in transactions
+    ]), 200
+
+@auth_blueprint.route("/balance", methods=["GET"])
+@jwt_required()
+def balance():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    return jsonify({"balance": user.money}), 200

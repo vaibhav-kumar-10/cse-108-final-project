@@ -1,11 +1,13 @@
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import { useAuth } from '../contexts/AuthContext.js'
 import { useLogout } from '../components/Logout.jsx'
+import React from 'react';
 
 function HeaderLoggedIn() {
 
     const { authUser } = useAuth();
     const handleLogout = useLogout();
+
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg">
@@ -23,6 +25,7 @@ function HeaderLoggedIn() {
                         </Nav.Link>
                         {/* Right Side Buttons */}
                         <Nav.Link href="/portfolio">Portfolio</Nav.Link>
+                        <Nav.Link href="/transactions">Transactions</Nav.Link>
                         <Nav.Link href="/trade">Trade</Nav.Link>
                         <Nav.Item>
                             <Button variant="light" className="basic" onClick={handleLogout}>

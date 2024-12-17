@@ -1,7 +1,10 @@
 import { useAuth } from '../contexts/AuthContext.js';
 
+
+
 export function useLogout() {
     const { logout } = useAuth();
+    
 
     const handleLogout = async () => {
         const access_token = localStorage.getItem("access_token");
@@ -18,6 +21,8 @@ export function useLogout() {
             if (response.ok) {
                 logout();
                 localStorage.removeItem("refresh_token");
+                window.location.href = '/';
+
             } else {
                 console.error('Logout failed');
             }

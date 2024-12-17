@@ -9,7 +9,9 @@ class User(db.Model):
      email = db.Column(db.String(320), unique=True, nullable=False)
      age = db.Column(db.Integer)
      _password = db.Column("password", db.String(255), nullable=False)
+     money = db.Column(db.Float, default=0.00, nullable=False)
     #  Will add more columns later
+    
          
      @hybrid_property
      def password(self):
