@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import StockBar from "./StockBar";
+import { useAuth } from "../contexts/AuthContext"; 
 
 function Portfolio() {
     const [searchQuery, setSearchQuery] = useState("*"); // To track the search input
