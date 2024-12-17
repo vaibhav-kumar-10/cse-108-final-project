@@ -96,24 +96,28 @@ function Portfolio() {
                     <table>
                         <thead>
                             <tr>
-                                <th>Ticker</th>
+                                <th>Symbol</th>
                                 <th>Name</th>
                                 <th>Quantity</th>
                                 <th>Current Price</th>
                                 <th>Percentage Change</th>
                                 <th>Total Value</th>
-                                <th>Action</th>
+                                <th>Sell</th>
                             </tr>
                         </thead>
                         <tbody>
                             {portfolioData.length > 0 ? (
                                 portfolioData.map((stock, index) => (
                                     <tr key={index}>
-                                        <td>{stock.stock}</td>
+                                        <td className={stock.percentage_change >= 0 ? "text-green" : "text-red"}>
+                                            {stock.stock}
+                                        </td>
                                         <td>{stock.name}</td>
                                         <td>{stock.quantity}</td>
                                         <td>${stock.current_price}</td>
-                                        <td>{stock.percentage_change}%</td>
+                                        <td className={stock.percentage_change >= 0 ? "text-green" : "text-red"}>
+                                            {stock.percentage_change}%  
+                                        </td>
                                         <td>${stock.total_value}</td>
                                         <td>
                                             <button
@@ -146,7 +150,7 @@ function Portfolio() {
                 <div className="modal-overlay">
                     <div className="modal-box">
                         <h3>Sell Stock</h3>
-                        <p><strong>Stock Name:</strong> {selectedStock.stock}</p>
+                        <p><strong>Stock Name:</strong> {selectedStock.name}</p>
                         <p><strong>Ticker:</strong> {selectedStock.stock}</p>
                         <p><strong>Current Price:</strong> ${selectedStock.current_price}</p>
                         <p><strong>Available Quantity:</strong> {selectedStock.quantity}</p>

@@ -247,7 +247,7 @@ def portfolio():
     for t in transactions:
         stock_ticker = t.type.split("-")[1]
 
-        # Fetch stock info since we need it to display
+        # Fetch stock price (use cache or fetch if not cached)
         stock_info = STOCK_PRICE_CACHE.get(stock_ticker)
         if not stock_info:
             stock_info = current_stock_price(stock_ticker)
@@ -261,12 +261,12 @@ def portfolio():
             elif t.type.startswith("sell-"):
                 holdings[stock_ticker] = holdings.get(stock_ticker, 0) - abs(t.amount / price)
 
-    #Gets rid of useless stocks
     current_holdings = {ticker: qty for ticker, qty in holdings.items() if qty > 0}
 
     tickers_with_names = [{"ticker": ticker, "name": ticker} for ticker in current_holdings.keys()]
     stock_data = fetch_stock_data(tickers_with_names)
 
+    
     stock_summary = []
     portfolio_value = 0
 
@@ -283,13 +283,13 @@ def portfolio():
 
             stock_summary.append({
                 "stock": ticker,
-                "name": name,
+                "name": name, 
                 "quantity": quantity,
                 "current_price": round(current_price, 2),
                 "percentage_change": round(percentage_change, 2),
                 "total_value": total_value
             })
-
+            
     balance = round(user.money, 2)
     total_value_now = portfolio_value + balance
     percentage_change_portfolio = ((total_value_now - 10000) / 10000) * 100

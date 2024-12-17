@@ -98,3 +98,12 @@
     margin: 0 5px;
 }
 
+.text-green {
+    color: green;
+    font-weight: bold;
+}
+
+.text-red {
+    color: red;
+    font-weight: bold;
+}

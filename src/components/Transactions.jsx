@@ -63,10 +63,10 @@ function Transactions() {
                 <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Transaction ID</th>
                             <th>Amount</th>
                             <th>Type</th>
-                            <th>Time</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -81,7 +81,7 @@ function Transactions() {
                     </tbody>
                 </table>
             ) : (
-                <p>No transactions found.</p> // Display this when the user has no transactions
+                <p>No transactions found.</p> 
             )}
         </div>
     );
