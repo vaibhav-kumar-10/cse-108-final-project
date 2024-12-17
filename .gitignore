@@ -27,3 +27,6 @@ backend/__pycache__/
 
 # Database
 backend/instance/trades.db
+
+# virtual environment
+/venv
