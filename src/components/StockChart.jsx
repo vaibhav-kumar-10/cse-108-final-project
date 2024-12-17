@@ -4,7 +4,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import axios from 'axios';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const StockChart = ({ symbol, timeDuration }) => {
+const StockChart = ({ symbol, timeDuration}) => {
   const [stockData, setStockData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,8 +32,8 @@ const StockChart = ({ symbol, timeDuration }) => {
           body: JSON.stringify({ time: timeDurationString}),
         });
 
-        if (response.ok)
-          console.log(response.json);
+        if (response.ok);
+          // console.log(response.json);
         else throw new Error("Failed to fetch stock data");
         const data = await response.json(); // Assuming the API returns an array of stock objects
         setStockData(data); // Update the stocks state with the fetched data

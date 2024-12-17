@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
         if (refresh_token == null)
             return;
 
-        console.log("Token " + refresh_token);
+        // console.log("Token " + refresh_token);
         try {
             // Send the refresh token to the backend with credentials included to pass cookies automatically
             const response = await fetch(url, {

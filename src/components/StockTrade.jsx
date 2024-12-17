@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import StockChart from './StockChart.jsx'
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLocation } from "react-router-dom";
 
 
 function StockTrade() {
@@ -11,6 +12,8 @@ function StockTrade() {
     const [success, setSuccess] = useState('');
     const [error, setError] = useState('');
     const [timeDuration, setTimeDuration] = useState("1d");
+    const location = useLocation();
+    const { price, name } = location.state || {};
 
     const handleToggle = (duration) => {
         setTimeDuration(duration);
@@ -55,10 +58,10 @@ function StockTrade() {
 
     return (
         <div className="container mt-4">
-            <h2>{params.ticker}</h2>
+            <h2>{name}</h2>
 
             {/* Include the stock chart */}
-            <StockChart symbol={params.ticker} timeDuration={timeDuration} />
+            <StockChart symbol={params.ticker} timeDuration={timeDuration}/>
 
             {/* Buy Section */}
             {isLoggedIn ? (
@@ -100,7 +103,7 @@ function StockTrade() {
 
                         {/* Buy Button */}
                         <button className="btn btn-success" onClick={handleBuy}>
-                            Buy
+                            Buy ${(price * quantity).toFixed(2)}
                         </button>
                     </div>
 

@@ -11,7 +11,7 @@ function StockBar(props) {
   const percentageColor = percentage >= 0 ? "text-success" : "text-danger";
 
   const handleClick = () => {
-    navigate(`/trade/${ticker}`);
+    navigate(`/trade/${ticker}`, { state: { price, name} });
   };
 
   return (
