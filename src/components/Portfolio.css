@@ -1,0 +1,109 @@
+/* Portfolio.css */
+
+/* Scoped to portfolio-container */
+.portfolio-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 10px; /* Small padding for better look on small screens */
+    box-sizing: border-box;
+}
+
+/* Table styling */
+.portfolio-container table {
+    width: 100%; /* Full width */
+    border-collapse: collapse; /* Remove space between borders */
+    margin-top: 20px;
+}
+
+.portfolio-container thead {
+    background-color: #f2f2f2; /* Light gray for headers */
+}
+
+.portfolio-container th, 
+.portfolio-container td {
+    padding: 10px;
+    text-align: center; /* Center align content */
+    border: 1px solid #ddd; /* Light gray borders */
+}
+
+.portfolio-container th {
+    font-weight: bold;
+}
+
+.portfolio-container tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row colors */
+}
+
+/* Wrapper container */
+.portfolio-container {
+    position: relative;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .portfolio-container th, 
+    .portfolio-container td {
+        padding: 8px; /* Reduce padding for smaller screens */
+        font-size: 14px; /* Smaller font */
+    }
+}
+
+/* Blur background */
+.blur-background::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Semi-transparent black overlay */
+    backdrop-filter: blur(5px); /* Blur effect */
+    z-index: 1; /* Below the modal */
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Above the blurred background */
+}
+
+/* Modal Box */
+.modal-box {
+    position: relative;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    text-align: center;
+    z-index: 1001; /* Ensures it's above the blur overlay */
+}
+
+/* Buttons */
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.modal-buttons button {
+    margin: 0 5px;
+}
+
+.text-green {
+    color: green;
+    font-weight: bold;
+}
+
+.text-red {
+    color: red;
+    font-weight: bold;
+}

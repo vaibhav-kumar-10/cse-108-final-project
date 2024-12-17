@@ -1,0 +1,6 @@
+/* In your CSS file */
+.stockBar:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Shadow effect */
+    outline: 2px solid #aad3ff;  /* Optional: Outline change */
+    /* transition: box-shadow 0.3s ease, outline 0.3s ease; Smooth transition */
+  }
