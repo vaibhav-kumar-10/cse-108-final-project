@@ -4,7 +4,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import axios from 'axios';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const StockChart = ({ symbol }) => {
+const StockChart = ({ symbol, timeDuration }) => {
   const [stockData, setStockData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -13,21 +13,30 @@ const StockChart = ({ symbol }) => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 10);
   const formattedStartDate = startDate.toISOString().split('T')[0];
+  const timeDurationString = {"1d": "1day", "1w": "1week", "6m": "6months", "1y": "1year", "5y": "5years"}[timeDuration];
 
-  const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/day/${formattedStartDate}/${endDate}`;
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  const BASE_URL = `${backendUrl}/stocks/stock/${symbol}`;
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        console.log("Request URL:", `${BASE_URL}?apiKey=${API_KEY}`);
-        console.log('apikey: ', `${API_KEY}`)
-        const response = await axios.get(`${BASE_URL}?apiKey=${API_KEY}`);
-        if (response.data && response.data.results) {
-          setStockData(response.data.results);
-        } else {
-          console.error('No data available for this ticker.');
-          setStockData([]);
-        }
+        const authToken = localStorage.getItem('access_token');
+        const response = await fetch(BASE_URL, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ time: timeDurationString}),
+        });
+
+        if (response.ok)
+          console.log(response.json);
+        else throw new Error("Failed to fetch stock data");
+        const data = await response.json(); // Assuming the API returns an array of stock objects
+        setStockData(data); // Update the stocks state with the fetched data
       } catch (error) {
         console.error('Error fetching stock data:', error);
       } finally {
@@ -36,7 +45,7 @@ const StockChart = ({ symbol }) => {
     };
 
     fetchData();
-  }, [symbol]);
+  }, [symbol, timeDuration]);
 
   const chartData = {
     labels: stockData.map((item) => new Date(item.t).toLocaleDateString()),

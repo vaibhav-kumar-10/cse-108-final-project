@@ -10,6 +10,11 @@ function StockTrade() {
     const [quantity, setQuantity] = useState(1); // State for quantity
     const [success, setSuccess] = useState('');
     const [error, setError] = useState('');
+    const [timeDuration, setTimeDuration] = useState("1d");
+
+    const handleToggle = (duration) => {
+        setTimeDuration(duration);
+    };
 
     const handleBuy = async () => {
         setError('');
@@ -51,26 +56,54 @@ function StockTrade() {
     return (
         <div className="container mt-4">
             <h2>{params.ticker}</h2>
+
             {/* Include the stock chart */}
-            <StockChart symbol={params.ticker} />
+            <StockChart symbol={params.ticker} timeDuration={timeDuration} />
 
             {/* Buy Section */}
             {isLoggedIn ? (
                 <div className="buy-section mt-4">
                     <h4>Buy Stock</h4>
+
                     <div className="d-flex align-items-center">
-                        <label htmlFor="quantity" className="me-2">Quantity:</label>
+                        {/* Toggle Button Section */}
+                        <div className="btn-group me-3 col-3" role="group" aria-label="Time Duration">
+                            {["1d", "1w", "6m", "1y", "5y"].map((duration) => (
+                                <button
+                                    key={duration}
+                                    type="button"
+                                    className={`btn btn-outline-primary ${
+                                        timeDuration === duration ? "active" : ""
+                                    }`}
+                                    onClick={() => handleToggle(duration)}
+                                >
+                                    {duration}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className='col-2'> 
+                            {/* White Space*/}
+                        </div>
+
+                        {/* Quantity Input */}
+                        <label htmlFor="quantity" className="me-2 ">Quantity:</label>
                         <input
                             type="number"
                             id="quantity"
                             value={quantity}
                             min="1"
                             className="form-control me-2"
-                            style={{ width: '100px' }}
+                            style={{ width: "100px" }}
                             onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                         />
-                        <button className="btn btn-success" onClick={handleBuy}>Buy</button>
+
+                        {/* Buy Button */}
+                        <button className="btn btn-success" onClick={handleBuy}>
+                            Buy
+                        </button>
                     </div>
+
                     {success && <p className="text-success mt-2">{success}</p>}
                     {error && <p className="text-danger mt-2">{error}</p>}
                 </div>
