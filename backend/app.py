@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 import os
+import argparse
 
 from extensions import db, migrate, jwt
 from auth.views import auth_blueprint
@@ -22,5 +23,10 @@ with app.app_context():
 
 if __name__ == '__main__':
     #app.run(debug=True, port=7000)
-    port = int(os.environ.get("PORT", 5000))  # Use Render's PORT variable
-    app.run(host="0.0.0.0", port=port, debug=False)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--host", default="0.0.0.0", help="Host to bind to")
+    parser.add_argument("--port", default=os.environ.get("PORT", 5000), type=int, help="Port to listen on")
+    args = parser.parse_args()
+
+    # Run Flask with parsed arguments
+    app.run(host=args.host, port=args.port)
