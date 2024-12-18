@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+import os
 
 from extensions import db, migrate, jwt
 from auth.views import auth_blueprint
