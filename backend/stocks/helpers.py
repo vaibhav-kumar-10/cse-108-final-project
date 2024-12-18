@@ -162,3 +162,14 @@ def preload_stock_prices(tickers):
     for ticker in tickers:
         current_stock_price(ticker)
     print("Stock prices preloaded!")
+
+def name_from_ticker(ticker):
+    try:
+        stock = yf.Ticker(ticker)  # Get stock data
+        stock_info = stock.info    # Fetch stock information
+        
+        # Extract and return the company name
+        return stock_info.get("longName", "Name not available")
+    except Exception as e:
+        print(f"Error fetching data for {ticker}: {e}")
+        return ticker

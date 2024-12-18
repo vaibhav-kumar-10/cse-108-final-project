@@ -10,8 +10,7 @@ from extensions import db, pwd_context, jwt
 from models.users import User
 from auth.helpers import add_token_to_database, revoke_token, is_token_revoked
 from models.transactions import Transaction
-from stocks.helpers import current_stock_price, fetch_stock_data, STOCK_PRICE_CACHE
-from stocks.helpers import preload_stock_prices
+from stocks.helpers import current_stock_price, fetch_stock_data, STOCK_PRICE_CACHE, name_from_ticker, preload_stock_prices
 
 
 
@@ -266,13 +265,13 @@ def portfolio():
     tickers_with_names = [{"ticker": ticker, "name": ticker} for ticker in current_holdings.keys()]
     stock_data = fetch_stock_data(tickers_with_names)
 
-    
     stock_summary = []
     portfolio_value = 0
 
     for stock in stock_data:
         ticker = stock["ticker"]
-        name = stock["name"] 
+        # name = stock["name"] 
+        name = name_from_ticker(ticker)
         current_price = stock["price"]
         percentage_change = stock["percentage"]
         quantity = round(current_holdings.get(ticker, 0), 2)
