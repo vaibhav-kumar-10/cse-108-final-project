@@ -43,15 +43,24 @@ And then start the server. This should run on localhost:7000
 python3 app.py
 ```
 
-### Current features
-- Frotend, backend, and databases boiler code are setup
-- Login, Register, Logout, Refresh tokens and authentication security works
-- Mock pages are there but need to be updated including: home, transactions, portfolio
+### Current features (Status: DONE)
+Authentication
+- Secure login and registration system. Authentication via JWT for persistent sessions.
 
-### Unimplemented Features
-- Backend route to get all stock information. First we need to find a library that gets stock information but there should be plenty.
-- Database to store user money and transactions. This also means updating the user DB class. We will skip DB migrations for simplicity.
-- Chart.js to view stock data. We need some way to parse data of some stock over a few years, and a page the view it. Chart.js is a recommended library.
-- Add transaction history route to backend. Allow frontend to view history of transactions. Update home page
-- Feature to obtain paper money, purchase and sell stocks. We can avoid adding call options for now. We will also avoid using websocket and rely on REST due to time.
-- Host application on a public server.
+Stock Search
+- Search for stocks using a ticker or company name. Results include live data such as the current stock price, company name, and percentage change. 
+
+Interactive Stock Charts
+- Visualize stock performance across different timeframes (1 day, 1 week, 1 month, 6 months, 1 year, and 5 years). Real-time price updates for enhanced trading decisions. 
+
+Buy and Sell Stocks
+- Simulate stock trading by buying or selling stocks at the current market price. Instant calculation of total costs or profits based on stock prices. 
+
+Portfolio Tracking
+- View all owned stocks with details such as quantity, total value, and performance.Automatically updates with the latest market prices. 
+
+Search Suggestions
+- Auto-suggest functionality when searching for stocks. Displays matching tickers and companies based on user input.
+
+Transaction History
+- Track all past buy and sell trades. Detailed records of transaction dates, quantities, and prices.
