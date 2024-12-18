@@ -10,7 +10,9 @@ export function useLogout() {
         const access_token = localStorage.getItem("access_token");
         console.log(access_token);
         try {
-            const response = await fetch('http://127.0.0.1:7000/auth/logout', {
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            const url = `${backendUrl}/auth/logout`;
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     "Authorization": `Bearer ${access_token}`,  // Add the Bearer token to the Authorization header

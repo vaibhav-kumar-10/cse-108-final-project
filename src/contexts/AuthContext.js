@@ -9,7 +9,8 @@ export function useAuth() {
 export function AuthProvider({ children }) {
     
     const handleRefresh = async () => {
-        const url = "http://127.0.0.1:7000/auth/refresh";
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const url = `${backendUrl}/auth/refresh`;
 
         const refresh_token = localStorage.getItem('refresh_token');
         if (refresh_token == null)
