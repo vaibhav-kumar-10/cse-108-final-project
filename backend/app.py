@@ -16,6 +16,8 @@ db.init_app(app)
 migrate.init_app(app, db)
 jwt.init_app(app)
 CORS(app, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "https://dashboard.render.com/web/srv-cth3ek1u0jms73fvaojg/deploys/dep-cth4j4hu0jms73fvn4mg"}}, supports_credentials=True)
+
 
 # Create database tables
 with app.app_context():
