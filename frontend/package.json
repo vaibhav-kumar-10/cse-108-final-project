@@ -49,5 +49,5 @@
   "devDependencies": {
     "web-vitals": "^4.2.4",
     "react-scripts": "5.0.0"
-  }
+  } 
 }

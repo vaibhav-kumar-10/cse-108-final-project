@@ -21,6 +21,7 @@ function Login() {
         // Define the backend endpoint
         const backendUrl = process.env.REACT_APP_BACKEND_URL;
         const url = `${backendUrl}/auth/login`;
+        console.log(backendUrl);
 
         try {
             const response = await fetch(url, {
