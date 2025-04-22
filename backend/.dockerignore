@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+.venv/
+
+# IDE / editor files
+.vscode/
+.idea/
+
+# Git files (optional)
+.git/
+.gitignore
+
+# Docker-related
+Dockerfile
+.dockerignore
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Testing and instance data
+instance/
+test.py

@@ -1,15 +1,15 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+/frontend/node_modules
+/frontend/.pnp
+/frontend.pnp.js
 
 # testing
-/coverage
+/frontend/coverage
 
 # production
-/build
+/frontend/build
 
 # misc
 .DS_Store
@@ -23,10 +23,15 @@ yarn-debug.log*
 yarn-error.log*
 
 # Python
-backend/__pycache__/
+/backend/__pycache__/
+/backend/api/schemas/__pycache__/
+/backend/api/auth/__pycache__/
+/backend/api/models/__pycache__/
+/backend/api/stocks/__pycache__/
 
 # Database
 backend/instance/trades.db
 
 # virtual environment
 /venv
+backend/.venv

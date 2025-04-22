@@ -16,19 +16,22 @@ db.init_app(app)
 migrate.init_app(app, db)
 jwt.init_app(app)
 CORS(app, supports_credentials=True)
-CORS(app, resources={r"/*": {"origins": "https://dashboard.render.com/web/srv-cth3ek1u0jms73fvaojg/deploys/dep-cth4j4hu0jms73fvn4mg"}}, supports_credentials=True)
+# CORS(app, resources={r"/*": {"origins": "https://dashboard.render.com/web/srv-cth3ek1u0jms73fvaojg/deploys/dep-cth4j4hu0jms73fvn4mg"}}, supports_credentials=True)
 
 
 # Create database tables
 with app.app_context():
     db.create_all()
 
-if __name__ == '__main__':
-    #app.run(debug=True, port=7000)
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--host", default="0.0.0.0", help="Host to bind to")
-    parser.add_argument("--port", default=os.environ.get("PORT", 5000), type=int, help="Port to listen on")
-    args = parser.parse_args()
+# if __name__ == '__main__':
+#     # app.run(debug=True, port=7000)
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--host", default="0.0.0.0", help="Host to bind to")
+#     parser.add_argument("--port", default=os.environ.get("PORT", 5000), type=int, help="Port to listen on")
+#     args = parser.parse_args()
 
-    # Run Flask with parsed arguments
-    app.run(host=args.host, port=args.port)
+#     # Run Flask with parsed arguments
+#     app.run(host=args.host, port=args.port)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)
