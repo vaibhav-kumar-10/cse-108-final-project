@@ -36,8 +36,8 @@ RUN npm run build
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Add custom NGINX config
+# # Add custom NGINX config
 # COPY default.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 3000
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
