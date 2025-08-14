@@ -1,5 +1,7 @@
 # Paper Stock Trading Project
 
+The project is hosted at this link (may contain bugs due to API keys not being maintained): https://papertrader.mooo.com/
+
 This project is for the CSE108 final. It uses ReactJS, Flask, and SQLAlchemy.
 
 ## Clone the repo
